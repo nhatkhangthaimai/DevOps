@@ -31,19 +31,52 @@ app.use(
   })
 );
 
-// Phục vụ static files cho Khách hàng
-app.use(express.static(path.join(__dirname, 'public')));
+const { requireAdminPage } = require('./middleware/auth');
 
-// Phục vụ static files cho Admin Portal
-app.use('/admin', express.static(path.join(__dirname, 'admin')));
+// --- CỔNG QUẢN TRỊ ADMIN TÁCH BIỆT & ĐƯỢC BẢO VỆ PHÍA SERVER ---
 
-// Điều hướng /admin về dashboard hoặc login
-app.get('/admin', (req, res) => {
+// 1. Phục vụ tài nguyên tĩnh CSS & JS cho trang Admin
+app.use('/admin/css', express.static(path.join(__dirname, 'admin', 'css')));
+app.use('/admin/js', express.static(path.join(__dirname, 'admin', 'js')));
+
+// 2. Trang đăng nhập Admin (nếu đã đăng nhập rồi thì chuyển thẳng sang Dashboard)
+app.get('/admin/login.html', (req, res) => {
+  if (req.session && req.session.isAdmin) {
+    return res.redirect('/admin/dashboard.html');
+  }
+  return res.sendFile(path.join(__dirname, 'admin', 'login.html'));
+});
+
+// 3. Đường dẫn logout tiện lợi
+app.get('/admin/logout', (req, res) => {
+  if (req.session) {
+    req.session.isAdmin = false;
+    req.session.adminUser = null;
+    req.session.destroy(() => {
+      res.clearCookie('fashion_store_sid', { path: '/' });
+      res.clearCookie('connect.sid', { path: '/' });
+      res.redirect('/admin/login.html');
+    });
+  } else {
+    res.clearCookie('fashion_store_sid', { path: '/' });
+    res.clearCookie('connect.sid', { path: '/' });
+    res.redirect('/admin/login.html');
+  }
+});
+
+// 4. Điều hướng /admin
+app.get(['/admin', '/admin/'], (req, res) => {
   if (req.session && req.session.isAdmin) {
     return res.redirect('/admin/dashboard.html');
   }
   return res.redirect('/admin/login.html');
 });
+
+// 5. Bảo vệ TẤT CẢ các trang admin nội bộ bằng middleware server requireAdminPage
+app.use('/admin', requireAdminPage, express.static(path.join(__dirname, 'admin')));
+
+// --- WEBSITE KHÁCH HÀNG (USER STOREFRONT) ---
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Đăng ký API Routes
 app.use('/api/products', productsRouter);

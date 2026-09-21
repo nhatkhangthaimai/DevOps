@@ -35,13 +35,39 @@ router.post('/login', (req, res) => {
 
 // POST /api/admin/logout
 router.post('/logout', (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      return res.status(500).json({ success: false, message: 'Lỗi khi đăng xuất' });
-    }
-    res.clearCookie('connect.sid');
-    res.json({ success: true, message: 'Đã đăng xuất thành công' });
-  });
+  if (req.session) {
+    req.session.isAdmin = false;
+    req.session.adminUser = null;
+    req.session.destroy(err => {
+      res.clearCookie('fashion_store_sid', { path: '/' });
+      res.clearCookie('connect.sid', { path: '/' });
+      if (err) {
+        return res.status(500).json({ success: false, message: 'Lỗi khi đăng xuất' });
+      }
+      return res.json({ success: true, message: 'Đã đăng xuất thành công' });
+    });
+  } else {
+    res.clearCookie('fashion_store_sid', { path: '/' });
+    res.clearCookie('connect.sid', { path: '/' });
+    return res.json({ success: true, message: 'Đã đăng xuất thành công' });
+  }
+});
+
+// GET /api/admin/logout
+router.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.isAdmin = false;
+    req.session.adminUser = null;
+    req.session.destroy(() => {
+      res.clearCookie('fashion_store_sid', { path: '/' });
+      res.clearCookie('connect.sid', { path: '/' });
+      return res.redirect('/admin/login.html');
+    });
+  } else {
+    res.clearCookie('fashion_store_sid', { path: '/' });
+    res.clearCookie('connect.sid', { path: '/' });
+    return res.redirect('/admin/login.html');
+  }
 });
 
 // GET /api/admin/me - Kiểm tra trạng thái đăng nhập

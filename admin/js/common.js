@@ -34,11 +34,13 @@ async function verifyAdminAuth() {
 async function handleLogout() {
   if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi trang quản trị?')) {
     try {
-      await fetch('/api/admin/logout', { method: 'POST' });
-      window.location.href = 'login.html';
+      await fetch('/api/admin/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
     } catch (e) {
       console.error('Logout error:', e);
-      window.location.href = 'login.html';
     }
+    window.location.replace('/admin/login.html');
   }
 }
