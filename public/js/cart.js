@@ -150,6 +150,9 @@ function openCheckoutModal() {
     const { total } = calculateSummary();
     const modalTotal = document.getElementById('modal-checkout-total');
     if (modalTotal) modalTotal.textContent = formatVND(total);
+    if (typeof autofillCheckoutIfPossible === 'function') {
+      autofillCheckoutIfPossible();
+    }
     modal.classList.add('active');
   }
 }

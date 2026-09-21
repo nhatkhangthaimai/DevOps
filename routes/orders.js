@@ -41,6 +41,7 @@ router.post('/', async (req, res) => {
         quantity: Number(item.quantity) || 1,
         image: item.image || ''
       })),
+      userId: req.session?.user?.id || null,
       subtotal: Number(subtotal) || 0,
       shippingFee: Number(shippingFee) || 0,
       discount: Number(discount) || 0,

@@ -7,6 +7,7 @@ const path = require('path');
 const productsRouter = require('./routes/products');
 const ordersRouter = require('./routes/orders');
 const adminRouter = require('./routes/admin');
+const authRouter = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -82,6 +83,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/products', productsRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/auth', authRouter);
 
 // Health check endpoint cho Docker / Render
 app.get('/health', (req, res) => {

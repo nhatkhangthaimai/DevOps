@@ -1,0 +1,20 @@
+[
+  {
+    "id": "user-1001",
+    "fullName": "Nguyễn Thị Khách Hàng",
+    "email": "khachhang@gmail.com",
+    "password": "123",
+    "phone": "0988888888",
+    "address": "123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh",
+    "createdAt": "2026-03-01T08:00:00.000Z"
+  },
+  {
+    "id": "user-933106",
+    "fullName": "Trần Văn Mới",
+    "email": "moi1789976932993@example.com",
+    "password": "123",
+    "phone": "0911223344",
+    "address": "789 Đường Hoa Mai, Phú Nhuận, TP.HCM",
+    "createdAt": "2026-09-21T07:48:53.106Z"
+  }
+]

@@ -3,6 +3,7 @@ const path = require('path');
 
 const PRODUCTS_FILE = path.join(__dirname, '..', 'data', 'products.json');
 const ORDERS_FILE = path.join(__dirname, '..', 'data', 'orders.json');
+const USERS_FILE = path.join(__dirname, '..', 'data', 'users.json');
 
 async function getProducts() {
   try {
@@ -40,9 +41,29 @@ async function saveOrders(orders) {
   await fs.writeFile(ORDERS_FILE, JSON.stringify(orders, null, 2), 'utf-8');
 }
 
+async function getUsers() {
+  try {
+    const data = await fs.readFile(USERS_FILE, 'utf-8');
+    return JSON.parse(data || '[]');
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      await fs.writeFile(USERS_FILE, '[]', 'utf-8');
+      return [];
+    }
+    console.error('Error reading users.json:', error);
+    throw error;
+  }
+}
+
+async function saveUsers(users) {
+  await fs.writeFile(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
+}
+
 module.exports = {
   getProducts,
   saveProducts,
   getOrders,
-  saveOrders
+  saveOrders,
+  getUsers,
+  saveUsers
 };

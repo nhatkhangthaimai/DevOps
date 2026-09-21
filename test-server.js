@@ -63,10 +63,19 @@ async function testEndpoints() {
   const dataStats = await resStats.json();
   console.log('5. GET /api/admin/stats:', dataStats.success, '| Tổng đơn:', dataStats.data?.totalOrders, '| Doanh thu:', dataStats.data?.totalRevenue);
 
-  // Test 6: Health check
+  // Test 6: POST /api/auth/login (Customer login)
+  const resUserLogin = await fetch('http://localhost:3000/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'khachhang@gmail.com', password: '123' })
+  });
+  const dataUserLogin = await resUserLogin.json();
+  console.log('6. POST /api/auth/login:', dataUserLogin.success, '| Khách hàng:', dataUserLogin.user?.fullName);
+
+  // Test 7: Health check
   const resHealth = await fetch('http://localhost:3000/health');
   const dataHealth = await resHealth.json();
-  console.log('6. GET /health:', dataHealth.status);
+  console.log('7. GET /health:', dataHealth.status);
 
   console.log('--- Hoàn tất kiểm tra API! Tất cả đều phản hồi chuẩn xác ---');
 }

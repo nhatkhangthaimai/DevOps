@@ -1,5 +1,33 @@
 [
   {
+    "id": "ORD-864624",
+    "customer": {
+      "fullName": "Test Automation Customer",
+      "phone": "0901234567",
+      "email": "test@example.com",
+      "address": "123 Đường Test, Quận 1, TP.HCM",
+      "paymentMethod": "cod",
+      "note": "Kiểm thử đơn hàng tự động"
+    },
+    "items": [
+      {
+        "id": "prod-001",
+        "name": "Áo Polo Pique Premium Minimalist",
+        "price": 389000,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99"
+      }
+    ],
+    "userId": null,
+    "subtotal": 389000,
+    "shippingFee": 30000,
+    "discount": 0,
+    "total": 419000,
+    "status": "pending",
+    "createdAt": "2026-09-21T07:49:19.144Z",
+    "updatedAt": "2026-09-21T07:49:19.144Z"
+  },
+  {
     "id": "ORD-413122",
     "customer": {
       "fullName": "jkl",
