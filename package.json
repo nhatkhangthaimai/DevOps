@@ -1,0 +1,27 @@
+{
+  "name": "devops-fashion-store",
+  "version": "1.0.0",
+  "description": "Mini Fashion Store - Node.js, Express, Session Auth, Docker and CI/CD",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test-server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "ecommerce",
+    "devops",
+    "docker",
+    "ci-cd"
+  ],
+  "author": "Nhat Khang",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1"
+  }
+}

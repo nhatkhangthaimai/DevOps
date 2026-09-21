@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Sản Phẩm | Fashion Store Mini</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo-icon">✨</div>
+        <div class="sidebar-brand">
+          <h3>FASHION MINI</h3>
+          <span>Admin Portal</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li>
+          <a href="dashboard.html" class="sidebar-link">
+            <span class="sidebar-icon">📊</span>
+            <span>Tổng Quan (Dashboard)</span>
+          </a>
+        </li>
+        <li>
+          <a href="products.html" class="sidebar-link active">
+            <span class="sidebar-icon">👕</span>
+            <span>Quản Lý Sản Phẩm</span>
+          </a>
+        </li>
+        <li>
+          <a href="orders.html" class="sidebar-link">
+            <span class="sidebar-icon">📦</span>
+            <span>Quản Lý Đơn Hàng</span>
+          </a>
+        </li>
+        <li style="margin-top: 15px; border-top: 1px solid #1e293b; padding-top: 15px;">
+          <a href="/" target="_blank" class="sidebar-link">
+            <span class="sidebar-icon">🌐</span>
+            <span>Xem Cửa Hàng (Client)</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button class="btn-logout" onclick="handleLogout()">
+          🚪 Đăng Xuất
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-title">
+          <h2>Quản Lý Danh Mục Sản Phẩm (CRUD)</h2>
+          <span>Thêm mới, chỉnh sửa giá bán, cập nhật tồn kho và xóa sản phẩm</span>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="admin-user-pill">
+            <div class="user-avatar">AD</div>
+            <span class="user-name">admin (Demo)</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Products Management Content -->
+      <div class="admin-content">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div style="display: flex; align-items: center; gap: 14px; flex-grow: 1; max-width: 450px;">
+              <input type="text" id="admin-product-search" placeholder="🔍 Tìm kiếm sản phẩm theo tên..." style="width: 100%; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+            </div>
+
+            <button class="btn-sm btn-sm-primary" style="padding: 10px 18px; font-size: 0.9rem;" onclick="openProductModal()">
+              + Thêm Sản Phẩm Mới
+            </button>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width: 80px;">Ảnh</th>
+                  <th>Tên Sản Phẩm</th>
+                  <th>Danh Mục</th>
+                  <th>Giá Bán</th>
+                  <th>Giá Gốc</th>
+                  <th>Tồn Kho</th>
+                  <th>Huy Hiệu</th>
+                  <th style="text-align: right;">Hành Động</th>
+                </tr>
+              </thead>
+              <tbody id="products-tbody">
+                <tr>
+                  <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                    Đang tải danh sách sản phẩm...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Product Modal (Add / Edit) -->
+  <div class="admin-modal" id="product-modal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="modal-form-title">Thêm Sản Phẩm Mới</h3>
+        <button type="button" onclick="closeProductModal()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+
+      <form id="product-form">
+        <input type="hidden" id="product-id">
+        <div class="admin-modal-body">
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Tên sản phẩm *</label>
+            <input type="text" id="product-name" required placeholder="VD: Áo Polo Pique Luxury" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Danh mục *</label>
+              <select id="product-category" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none; background: #fff;">
+                <option value="ao">Áo (Sơ mi, Polo, Thun)</option>
+                <option value="quan">Quần (Tây, Jeans, Kaki)</option>
+                <option value="ao-khoac">Áo khoác & Blazer</option>
+                <option value="dam">Váy đầm</option>
+                <option value="phu-kien">Phụ kiện đồ da</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Số lượng kho</label>
+              <input type="number" id="product-stock" value="20" min="0" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Giá bán hiện tại (VNĐ) *</label>
+              <input type="number" id="product-price" required placeholder="390000" step="1000" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Giá gốc (gạch ngang)</label>
+              <input type="number" id="product-orig-price" placeholder="490000" step="1000" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">URL Hình ảnh</label>
+            <input type="url" id="product-image" placeholder="https://images.unsplash.com/..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Mô tả sản phẩm</label>
+            <textarea id="product-desc" rows="3" placeholder="Chất liệu, kiểu dáng, điểm nổi bật..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;"></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Huy hiệu (Badge)</label>
+              <input type="text" id="product-badge" placeholder="VD: Bán Chạy, Mới, Hot" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 24px;">
+              <input type="checkbox" id="product-featured" style="width: 18px; height: 18px;">
+              <label for="product-featured" style="font-size: 0.9rem; font-weight: 600; cursor: pointer;">Đánh dấu Nổi Bật</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-modal-footer">
+          <button type="button" class="btn-sm btn-sm-edit" onclick="closeProductModal()">Hủy</button>
+          <button type="submit" class="btn-sm btn-sm-primary" id="btn-save-product">Lưu Sản Phẩm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/products.js"></script>
+</body>
+</html>

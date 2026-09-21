@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Đơn Hàng | Fashion Store Mini</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo-icon">✨</div>
+        <div class="sidebar-brand">
+          <h3>FASHION MINI</h3>
+          <span>Admin Portal</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li>
+          <a href="dashboard.html" class="sidebar-link">
+            <span class="sidebar-icon">📊</span>
+            <span>Tổng Quan (Dashboard)</span>
+          </a>
+        </li>
+        <li>
+          <a href="products.html" class="sidebar-link">
+            <span class="sidebar-icon">👕</span>
+            <span>Quản Lý Sản Phẩm</span>
+          </a>
+        </li>
+        <li>
+          <a href="orders.html" class="sidebar-link active">
+            <span class="sidebar-icon">📦</span>
+            <span>Quản Lý Đơn Hàng</span>
+          </a>
+        </li>
+        <li style="margin-top: 15px; border-top: 1px solid #1e293b; padding-top: 15px;">
+          <a href="/" target="_blank" class="sidebar-link">
+            <span class="sidebar-icon">🌐</span>
+            <span>Xem Cửa Hàng (Client)</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button class="btn-logout" onclick="handleLogout()">
+          🚪 Đăng Xuất
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-title">
+          <h2>Quản Lý Đơn Hàng Khách Hàng</h2>
+          <span>Theo dõi chi tiết, tiến độ vận chuyển và cập nhật trạng thái đơn hàng</span>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="admin-user-pill">
+            <div class="user-avatar">AD</div>
+            <span class="user-name">admin (Demo)</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Orders Management Content -->
+      <div class="admin-content">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+              <input type="text" id="admin-order-search" placeholder="🔍 Tìm theo mã đơn, tên, số điện thoại..." style="padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; min-width: 320px; outline: none;">
+              
+              <select id="status-filter" style="padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; background: #fff; outline: none;">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="pending">Chờ xác nhận</option>
+                <option value="processing">Đang xử lý</option>
+                <option value="shipped">Đang giao</option>
+                <option value="delivered">Đã giao</option>
+                <option value="cancelled">Đã hủy</option>
+              </select>
+            </div>
+
+            <div style="font-size: 0.88rem; color: var(--text-muted);">
+              Tổng số đơn: <strong id="orders-total-count">0</strong>
+            </div>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Mã Đơn</th>
+                  <th>Khách Hàng</th>
+                  <th>Thời Gian Đặt</th>
+                  <th>Phương Thức</th>
+                  <th>Tổng Tiền</th>
+                  <th>Trạng Thái</th>
+                  <th style="text-align: right;">Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody id="orders-tbody">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                    Đang tải danh sách đơn hàng...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Order Detail & Update Modal -->
+  <div class="admin-modal" id="order-detail-modal">
+    <div class="admin-modal-card" style="max-width: 680px;">
+      <div class="admin-modal-header">
+        <h3 id="modal-order-id">Chi Tiết Đơn Hàng #</h3>
+        <button type="button" onclick="closeOrderModal()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+
+      <div class="admin-modal-body">
+        <!-- Customer Info -->
+        <div style="background: var(--bg-main); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+          <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">Thông Tin Người Nhận</h4>
+          <div style="font-size: 0.88rem; line-height: 1.6;">
+            <div><strong>Họ tên:</strong> <span id="modal-cust-name"></span></div>
+            <div><strong>Số điện thoại:</strong> <span id="modal-cust-phone"></span></div>
+            <div><strong>Địa chỉ:</strong> <span id="modal-cust-address"></span></div>
+            <div><strong>Ghi chú của khách:</strong> <span id="modal-cust-note" style="color: var(--text-muted);"></span></div>
+          </div>
+        </div>
+
+        <!-- Ordered Items Table -->
+        <h4 style="font-size: 0.95rem; margin-bottom: 10px;">Sản Phẩm Đã Đặt</h4>
+        <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 20px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
+            <thead style="background: #f8fafc; text-align: left;">
+              <tr>
+                <th style="padding: 10px 14px;">Sản phẩm</th>
+                <th style="padding: 10px 14px; text-align: center;">SL</th>
+                <th style="padding: 10px 14px; text-align: right;">Đơn giá</th>
+                <th style="padding: 10px 14px; text-align: right;">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody id="modal-items-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 24px; font-size: 1.1rem; font-weight: 800;">
+          Tổng thanh toán: <span style="color: var(--primary); margin-left: 10px;" id="modal-order-total">0₫</span>
+        </div>
+
+        <!-- Status Update Section -->
+        <div style="border-top: 1px solid var(--border); padding-top: 20px;">
+          <h4 style="font-size: 0.95rem; margin-bottom: 12px;">Cập Nhật Trạng Thái Đơn Hàng</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: center;">
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px;">Trạng thái xử lý:</label>
+              <select id="modal-update-status" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; background: #fff; outline: none;">
+                <option value="pending">⏳ Chờ xác nhận</option>
+                <option value="processing">⚙️ Đang xử lý</option>
+                <option value="shipped">🚚 Đang giao hàng</option>
+                <option value="delivered">✅ Đã giao thành công</option>
+                <option value="cancelled">❌ Hủy đơn hàng</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px;">Ghi chú nội bộ admin:</label>
+              <input type="text" id="modal-admin-note" placeholder="VD: Đã gửi ViettelPost..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button type="button" class="btn-sm btn-sm-edit" onclick="closeOrderModal()">Đóng</button>
+        <button type="button" class="btn-sm btn-sm-primary" id="btn-save-order-status" onclick="saveOrderStatus()">
+          Lưu Cập Nhật
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/orders.js"></script>
+</body>
+</html>

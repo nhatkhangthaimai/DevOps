@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng Nhập Quản Trị | Fashion Store Mini</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="login-page">
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo-badge">🛡️</div>
+      <h2>Hệ Thống Quản Trị</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
+        Fashion Store Mini - Session Auth
+      </p>
+    </div>
+
+    <!-- Gợi ý tài khoản demo -->
+    <div class="demo-credentials-box">
+      <div style="font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+        🔑 Tài khoản Demo (Hard-coded):
+      </div>
+      <div>Tài khoản: <strong>admin</strong></div>
+      <div>Mật khẩu: <strong>admin123</strong></div>
+      <button type="button" onclick="fillDemoCredentials()" style="margin-top: 8px; background: #e0e7ff; color: #4338ca; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+        Điền nhanh tài khoản demo ➔
+      </button>
+    </div>
+
+    <div id="login-alert" style="display: none; padding: 12px; border-radius: 8px; font-size: 0.88rem; margin-bottom: 20px; font-weight: 600;"></div>
+
+    <form id="admin-login-form">
+      <div style="margin-bottom: 18px;">
+        <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">
+          Tên đăng nhập
+        </label>
+        <input type="text" id="username" required placeholder="admin" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.95rem; outline: none;">
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">
+          Mật khẩu
+        </label>
+        <input type="password" id="password" required placeholder="••••••••" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.95rem; outline: none;">
+      </div>
+
+      <button type="submit" id="btn-login" style="width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer;">
+        Đăng Nhập Quản Trị
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 24px; font-size: 0.85rem;">
+      <a href="/" style="color: var(--text-muted);">← Quay lại Cửa Hàng Khách Hàng</a>
+    </div>
+  </div>
+
+  <script src="js/login.js"></script>
+</body>
+</html>

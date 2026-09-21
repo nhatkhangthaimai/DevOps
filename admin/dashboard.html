@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bảng Điều Khiển Quản Trị (Dashboard) | Fashion Store Mini</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo-icon">✨</div>
+        <div class="sidebar-brand">
+          <h3>FASHION MINI</h3>
+          <span>Admin Portal</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li>
+          <a href="dashboard.html" class="sidebar-link active">
+            <span class="sidebar-icon">📊</span>
+            <span>Tổng Quan (Dashboard)</span>
+          </a>
+        </li>
+        <li>
+          <a href="products.html" class="sidebar-link">
+            <span class="sidebar-icon">👕</span>
+            <span>Quản Lý Sản Phẩm</span>
+          </a>
+        </li>
+        <li>
+          <a href="orders.html" class="sidebar-link">
+            <span class="sidebar-icon">📦</span>
+            <span>Quản Lý Đơn Hàng</span>
+          </a>
+        </li>
+        <li style="margin-top: 15px; border-top: 1px solid #1e293b; padding-top: 15px;">
+          <a href="/" target="_blank" class="sidebar-link">
+            <span class="sidebar-icon">🌐</span>
+            <span>Xem Cửa Hàng (Client)</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button class="btn-logout" onclick="handleLogout()">
+          🚪 Đăng Xuất
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-title">
+          <h2>Bảng Thống Kê Tổng Quan</h2>
+          <span>Cập nhật trạng thái kinh doanh & đơn hàng realtime</span>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="admin-user-pill">
+            <div class="user-avatar">AD</div>
+            <span class="user-name">admin (Demo)</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Content -->
+      <div class="admin-content">
+        <!-- KPI Cards Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-purple">💰</div>
+            <div class="kpi-info">
+              <h4>Doanh Thu Demo</h4>
+              <div class="kpi-value" id="kpi-revenue">0₫</div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-green">📦</div>
+            <div class="kpi-info">
+              <h4>Tổng Đơn Hàng</h4>
+              <div class="kpi-value" id="kpi-orders">0</div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-blue">👕</div>
+            <div class="kpi-info">
+              <h4>Sản Phẩm Trong Kho</h4>
+              <div class="kpi-value" id="kpi-products">0</div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-amber">⏳</div>
+            <div class="kpi-info">
+              <h4>Đơn Chờ Xử Lý</h4>
+              <div class="kpi-value" id="kpi-pending">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions & Recent Orders -->
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3>Đơn Hàng Gần Đây</h3>
+            <div style="display: flex; gap: 10px;">
+              <a href="products.html" class="btn-sm btn-sm-primary">+ Thêm Sản Phẩm</a>
+              <a href="orders.html" class="btn-sm btn-sm-edit">Xem Tất Cả Đơn ➔</a>
+            </div>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Mã Đơn</th>
+                  <th>Khách Hàng</th>
+                  <th>Thời Gian</th>
+                  <th>Số Món</th>
+                  <th>Tổng Tiền</th>
+                  <th>Trạng Thái</th>
+                  <th>Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody id="recent-orders-tbody">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                    Đang tải dữ liệu đơn hàng...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- DevOps & System Info Banner -->
+        <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: var(--radius-lg); padding: 24px; color: #fff; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 4px;">🚀 Trạng Thái Hạ Tầng DevOps</h4>
+            <p style="color: #94a3b8; font-size: 0.88rem;">
+              Node.js v20+ • Alpine Linux Container • CI/CD GitHub Actions Workflow tự động build & push Docker Hub image <code>nhatkhang2405/devops:latest</code>.
+            </p>
+          </div>
+          <a href="https://hub.docker.com/r/nhatkhang2405/devops" target="_blank" style="background: #3b82f6; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 700;">
+            Xem Docker Hub ➔
+          </a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

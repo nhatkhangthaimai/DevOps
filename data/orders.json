@@ -1,0 +1,151 @@
+[
+  {
+    "id": "ORD-422304",
+    "customer": {
+      "fullName": "Test Automation Customer",
+      "phone": "0901234567",
+      "email": "test@example.com",
+      "address": "123 Đường Test, Quận 1, TP.HCM",
+      "paymentMethod": "cod",
+      "note": "Kiểm thử đơn hàng tự động"
+    },
+    "items": [
+      {
+        "id": "prod-001",
+        "name": "Áo Polo Pique Premium Minimalist",
+        "price": 389000,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99"
+      }
+    ],
+    "subtotal": 389000,
+    "shippingFee": 30000,
+    "discount": 0,
+    "total": 419000,
+    "status": "pending",
+    "createdAt": "2026-09-21T07:16:57.693Z",
+    "updatedAt": "2026-09-21T07:16:57.693Z"
+  },
+  {
+    "id": "ORD-781920",
+    "customer": {
+      "fullName": "Nguyễn Văn An",
+      "phone": "0988123456",
+      "email": "an.nguyen@example.com",
+      "address": "123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh",
+      "paymentMethod": "cod",
+      "note": "Giao giờ hành chính giúp mình nhé"
+    },
+    "items": [
+      {
+        "id": "prod-001",
+        "name": "Áo Polo Pique Premium Minimalist",
+        "price": 389000,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=600&auto=format&fit=crop&q=80"
+      },
+      {
+        "id": "prod-003",
+        "name": "Quần Tây May Đo Slimfit Kẻ Chìm",
+        "price": 520000,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&auto=format&fit=crop&q=80"
+      }
+    ],
+    "subtotal": 1298000,
+    "shippingFee": 0,
+    "discount": 0,
+    "total": 1298000,
+    "status": "delivered",
+    "createdAt": "2026-03-10T09:15:00.000Z",
+    "updatedAt": "2026-03-12T14:30:00.000Z"
+  },
+  {
+    "id": "ORD-652319",
+    "customer": {
+      "fullName": "Trần Thị Mai",
+      "phone": "0912345678",
+      "email": "mai.tran@example.com",
+      "address": "45 Lý Tự Trọng, Quận Hải Châu, TP. Đà Nẵng",
+      "paymentMethod": "banking",
+      "note": "Gọi trước khi giao 15 phút"
+    },
+    "items": [
+      {
+        "id": "prod-007",
+        "name": "Đầm Lụa Satin Dáng Midi Thanh Thoát",
+        "price": 720000,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&auto=format&fit=crop&q=80"
+      }
+    ],
+    "subtotal": 720000,
+    "shippingFee": 0,
+    "discount": 50000,
+    "total": 670000,
+    "status": "shipped",
+    "createdAt": "2026-03-15T11:20:00.000Z",
+    "updatedAt": "2026-03-16T08:45:00.000Z"
+  },
+  {
+    "id": "ORD-918234",
+    "customer": {
+      "fullName": "Lê Hoàng Phúc",
+      "phone": "0909876543",
+      "email": "phuc.le@example.com",
+      "address": "88 Cầu Giấy, Phường Dịch Vọng, Quận Cầu Giấy, Hà Nội",
+      "paymentMethod": "cod",
+      "note": ""
+    },
+    "items": [
+      {
+        "id": "prod-005",
+        "name": "Áo Blazer Relaxed Fit Modern Chic",
+        "price": 950000,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop&q=80"
+      },
+      {
+        "id": "prod-009",
+        "name": "Ví Da Bò Sáp Bifold Thủ Công",
+        "price": 320000,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&auto=format&fit=crop&q=80"
+      }
+    ],
+    "subtotal": 1270000,
+    "shippingFee": 0,
+    "discount": 0,
+    "total": 1270000,
+    "status": "processing",
+    "createdAt": "2026-03-18T14:40:00.000Z",
+    "updatedAt": "2026-03-18T16:00:00.000Z"
+  },
+  {
+    "id": "ORD-482019",
+    "customer": {
+      "fullName": "Phạm Minh Đức",
+      "phone": "0977654321",
+      "email": "duc.pham@example.com",
+      "address": "204 Pasteur, Phường Võ Thị Sáu, Quận 3, TP. Hồ Chí Minh",
+      "paymentMethod": "cod",
+      "note": "Cho kiểm tra hàng trước khi nhận"
+    },
+    "items": [
+      {
+        "id": "prod-002",
+        "name": "Áo Sơ Mi Oxford Button-Down",
+        "price": 450000,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&auto=format&fit=crop&q=80"
+      }
+    ],
+    "subtotal": 450000,
+    "shippingFee": 30000,
+    "discount": 0,
+    "total": 480000,
+    "status": "pending",
+    "createdAt": "2026-03-20T10:05:00.000Z",
+    "updatedAt": "2026-03-20T10:05:00.000Z"
+  }
+]

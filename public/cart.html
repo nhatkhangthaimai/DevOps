@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giỏ Hàng Của Bạn | Fashion Store Mini</title>
+  <meta name="description" content="Xem và kiểm tra các món đồ thời trang đã chọn trước khi tiến hành thanh toán tại Fashion Store Mini.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cart.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">
+        <div class="brand-icon">✨</div>
+        <span>FASHION<span style="color: var(--primary);">MINI</span></span>
+        <span class="brand-badge">DevOps</span>
+      </a>
+
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-link">Trang Chủ</a>
+        <a href="products.html" class="nav-link">Tất Cả Sản Phẩm</a>
+        <a href="products.html?category=ao" class="nav-link">Áo Nam/Nữ</a>
+        <a href="products.html?category=quan" class="nav-link">Quần Tây/Jeans</a>
+        <a href="products.html?category=dam" class="nav-link">Váy Đầm</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="cart.html" class="nav-btn nav-btn-cart" style="border-color: var(--primary); color: var(--primary);">
+          🛒 <span style="font-weight: 700;">Giỏ Hàng</span>
+          <span class="cart-count" style="display: none;">0</span>
+        </a>
+        <a href="/admin" class="nav-btn nav-btn-admin" title="Cổng quản trị viên">
+          🛡️ Admin
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Cart Page Content -->
+  <main class="cart-page">
+    <div class="container" id="cart-container-wrap">
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="index.html">Trang chủ</a>
+        <span class="breadcrumb-separator">/</span>
+        <span style="color: var(--secondary); font-weight: 600;">Giỏ hàng</span>
+      </div>
+
+      <!-- Empty Cart View -->
+      <div class="empty-state" id="cart-empty-view" style="display: none; max-width: 600px; margin: 40px auto;">
+        <div class="empty-icon">🛒</div>
+        <h3>Giỏ hàng của bạn đang trống</h3>
+        <p>Có vẻ như bạn chưa chọn được sản phẩm thời trang ưng ý nào. Hãy khám phá ngay các bộ sưu tập mới nhất nhé!</p>
+        <a href="products.html" class="btn-primary" style="display: inline-flex; margin-top: 10px;">Khám Phá Cửa Hàng</a>
+      </div>
+
+      <!-- Content View -->
+      <div class="cart-layout" id="cart-content-view">
+        <!-- Left: Cart Items -->
+        <div class="cart-card">
+          <div class="cart-card-header">
+            <h2>Giỏ Hàng (<span id="cart-items-count">0</span> món)</h2>
+            <button class="btn-clear-cart" onclick="clearAllCart()">🗑️ Xóa tất cả</button>
+          </div>
+
+          <div class="cart-items-list" id="cart-items-list">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="summary-box">
+          <div class="summary-title">Tóm Tắt Đơn Hàng</div>
+
+          <!-- Promo Code Box -->
+          <div class="promo-form">
+            <input type="text" id="promo-input" placeholder="Mã giảm giá (VD: GIAM10)">
+            <button type="button" onclick="applyPromoCode()">Áp dụng</button>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: -12px; margin-bottom: 16px;">
+            💡 Thử nhập mã: <strong>GIAM10</strong> (Giảm 10%) hoặc <strong>FREESHIP</strong>
+          </div>
+
+          <div class="summary-lines">
+            <div class="summary-row">
+              <span>Tạm tính</span>
+              <span id="summary-subtotal" style="font-weight: 700; color: var(--secondary);">0₫</span>
+            </div>
+            <div class="summary-row">
+              <span>Phí vận chuyển</span>
+              <span id="summary-shipping" style="font-weight: 700;">Miễn phí</span>
+            </div>
+            <div class="summary-row">
+              <span>Giảm giá</span>
+              <span id="summary-discount" style="font-weight: 700; color: var(--accent);">0₫</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Tổng thanh toán</span>
+              <span class="total-amount" id="summary-total">0₫</span>
+            </div>
+          </div>
+
+          <button class="btn-checkout" onclick="openCheckoutModal()">
+            Tiến Hành Đặt Hàng ➔
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Checkout Modal -->
+  <div class="modal-overlay checkout-modal" id="checkout-modal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeCheckoutModal()">&times;</button>
+      <div class="checkout-header">
+        <h3>Thông Tin Giao Hàng & Đặt Hàng</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 4px;">
+          Vui lòng kiểm tra kỹ thông tin nhận hàng trước khi xác nhận.
+        </p>
+      </div>
+
+      <div class="checkout-body">
+        <form id="checkout-form">
+          <div class="form-group">
+            <label for="order-fullname">Họ và tên người nhận *</label>
+            <input type="text" id="order-fullname" placeholder="VD: Nguyễn Văn An" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="order-phone">Số điện thoại *</label>
+              <input type="tel" id="order-phone" placeholder="VD: 0988123456" required>
+            </div>
+            <div class="form-group">
+              <label for="order-email">Email (tùy chọn)</label>
+              <input type="email" id="order-email" placeholder="email@example.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="order-address">Địa chỉ nhận hàng chi tiết *</label>
+            <textarea id="order-address" rows="2" placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/TP" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Phương thức thanh toán</label>
+            <div class="payment-options">
+              <label class="payment-option-label">
+                <input type="radio" name="paymentMethod" value="cod" checked>
+                <span>💵 Tiền mặt khi nhận hàng (COD)</span>
+              </label>
+              <label class="payment-option-label">
+                <input type="radio" name="paymentMethod" value="banking">
+                <span>📱 Chuyển khoản QR ngân hàng</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="order-note">Ghi chú giao hàng</label>
+            <input type="text" id="order-note" placeholder="VD: Giao giờ hành chính, gọi trước khi đến...">
+          </div>
+
+          <div style="background: var(--bg-body); border-radius: var(--radius-md); padding: 14px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 700; color: var(--secondary);">Số tiền cần thanh toán:</span>
+            <span style="font-weight: 800; font-size: 1.25rem; color: var(--primary);" id="modal-checkout-total">0₫</span>
+          </div>
+
+          <button type="submit" class="btn-checkout" id="btn-submit-order">
+            Xác Nhận Đặt Hàng
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top: none; padding-top: 0;">
+        <div>© 2026 Fashion Store Mini. All rights reserved.</div>
+        <div><a href="products.html" style="color: var(--primary);">Tiếp tục mua sắm</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/cart.js"></script>
+</body>
+</html>
