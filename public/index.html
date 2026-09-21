@@ -225,26 +225,26 @@
 
             return `
               <div class="product-card">
-                <div class="product-thumb-wrap">
+                <div class="product-thumb-wrap" onclick="openProductDetail('${p.id}')" style="cursor: pointer;" title="Bấm để xem chi tiết ${p.name}">
                   <img src="${p.image}" alt="${p.name}" loading="lazy">
                   <div class="product-badges">${badgeHtml}</div>
-                  <button class="product-quick-btn" onclick='openQuickView(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
-                    👁 Xem nhanh
+                  <button type="button" class="product-quick-btn" onclick="event.stopPropagation(); openProductDetail('${p.id}')">
+                    👁 Xem chi tiết
                   </button>
                 </div>
                 <div class="product-content">
                   <span class="product-cat">${p.categoryName || p.category}</span>
-                  <h3 class="product-name" title="${p.name}">${p.name}</h3>
+                  <h3 class="product-name" onclick="openProductDetail('${p.id}')" style="cursor: pointer;" title="Bấm để xem chi tiết ${p.name}">${p.name}</h3>
                   <div class="product-rating">
                     <span>★ ${p.rating || 5.0}</span>
                     <span>(${p.reviewsCount || 50})</span>
                   </div>
                   <div class="product-footer">
-                    <div class="price-wrap">
+                    <div class="price-wrap" onclick="openProductDetail('${p.id}')" style="cursor: pointer;">
                       <span class="product-price">${formatVND(p.price)}</span>
                       ${origPriceHtml}
                     </div>
-                    <button class="btn-add-cart" title="Thêm vào giỏ" onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
+                    <button type="button" class="btn-add-cart" title="Thêm vào giỏ" onclick="event.stopPropagation(); addToCartById('${p.id}')">
                       +
                     </button>
                   </div>

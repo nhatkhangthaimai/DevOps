@@ -98,44 +98,41 @@ function showToast(message, type = 'success') {
   }, 3200);
 }
 
-// Modal Xem nhanh Sản phẩm (Quick View)
+// Modal Xem chi tiết Sản phẩm (Product Detail Modal)
 let currentModalProduct = null;
 
-function openQuickView(product) {
+window.openProductDetail = async function(idOrProduct) {
+  let product = null;
+
+  if (typeof idOrProduct === 'string') {
+    if (typeof allProducts !== 'undefined' && Array.isArray(allProducts)) {
+      product = allProducts.find(p => p.id === idOrProduct);
+    }
+    if (!product) {
+      try {
+        const res = await fetch(`/api/products/${idOrProduct}`);
+        const data = await res.json();
+        if (data.success) product = data.data;
+      } catch (e) {
+        console.error('Error fetching product by id:', e);
+      }
+    }
+  } else if (typeof idOrProduct === 'object' && idOrProduct !== null) {
+    product = idOrProduct;
+  }
+
+  if (!product) {
+    showToast('Không tìm thấy thông tin sản phẩm', 'error');
+    return;
+  }
+
   currentModalProduct = product;
+
   let modal = document.getElementById('quick-view-modal');
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'quick-view-modal';
     modal.className = 'modal-overlay';
-    modal.innerHTML = `
-      <div class="modal-box">
-        <button class="modal-close-btn" onclick="closeQuickView()">&times;</button>
-        <div class="modal-body">
-          <div class="modal-img-wrap">
-            <img id="modal-img" src="" alt="Product">
-          </div>
-          <div class="modal-details">
-            <span class="modal-cat" id="modal-cat"></span>
-            <h3 id="modal-title"></h3>
-            <div class="product-rating" id="modal-rating"></div>
-            <div class="modal-price" id="modal-price"></div>
-            <p class="modal-desc" id="modal-desc"></p>
-            
-            <div style="margin-bottom: 8px; font-size: 0.85rem; font-weight: 700; color: var(--secondary);">Số lượng:</div>
-            <div class="qty-control">
-              <button class="qty-btn" onclick="changeModalQty(-1)">-</button>
-              <input type="text" id="modal-qty" class="qty-input" value="1" readonly>
-              <button class="qty-btn" onclick="changeModalQty(1)">+</button>
-            </div>
-            
-            <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="addCurrentModalToCart()">
-              Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
     document.body.appendChild(modal);
 
     modal.addEventListener('click', (e) => {
@@ -143,18 +140,112 @@ function openQuickView(product) {
     });
   }
 
-  document.getElementById('modal-img').src = product.image;
-  document.getElementById('modal-cat').textContent = product.categoryName || product.category;
-  document.getElementById('modal-title').textContent = product.name;
-  document.getElementById('modal-price').textContent = formatVND(product.price);
-  document.getElementById('modal-desc').textContent = product.description;
-  document.getElementById('modal-qty').value = '1';
+  const origPriceHtml = product.originalPrice && product.originalPrice > product.price
+    ? `<span style="text-decoration: line-through; color: var(--text-light); font-size: 1.05rem; margin-left: 10px;">${formatVND(product.originalPrice)}</span>`
+    : '';
 
   const stars = '★'.repeat(Math.round(product.rating || 5)) + '☆'.repeat(5 - Math.round(product.rating || 5));
-  document.getElementById('modal-rating').innerHTML = `<span>${stars}</span> <span>(${product.reviewsCount || 50} đánh giá)</span>`;
+
+  modal.innerHTML = `
+    <div class="modal-box" style="max-width: 820px;">
+      <button class="modal-close-btn" onclick="closeQuickView()">&times;</button>
+      <div class="modal-body" style="padding: 32px; gap: 32px;">
+        <div class="modal-img-wrap" style="position: relative; border-radius: var(--radius-lg); overflow: hidden; background: #f8fafc;">
+          <img id="modal-img" src="${product.image}" alt="${product.name}">
+          ${product.badge ? `<span style="position: absolute; top: 12px; left: 12px; background: var(--accent); color: #fff; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 800;">${product.badge}</span>` : ''}
+        </div>
+        <div class="modal-details" style="display: flex; flex-direction: column;">
+          <span class="modal-cat" style="color: var(--primary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase;">${product.categoryName || product.category}</span>
+          <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--secondary); margin: 6px 0 8px;">${product.name}</h3>
+          
+          <div class="product-rating" style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--warning); margin-bottom: 12px;">
+            <span>${stars}</span>
+            <span style="color: var(--text-muted); font-size: 0.82rem;">(${product.reviewsCount || 68} đánh giá)</span>
+          </div>
+
+          <div class="modal-price" style="font-size: 1.6rem; font-weight: 800; color: var(--secondary); margin-bottom: 14px;">
+            ${formatVND(product.price)}
+            ${origPriceHtml}
+          </div>
+
+          <p class="modal-desc" style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; margin-bottom: 18px;">
+            ${product.description}
+          </p>
+
+          <!-- Size selection -->
+          <div style="margin-bottom: 16px;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--secondary); margin-bottom: 8px;">Kích cỡ (Size):</div>
+            <div style="display: flex; gap: 8px;" id="modal-size-selector">
+              <button type="button" class="size-btn active" style="width: 40px; height: 38px; border-radius: 8px; border: 1.5px solid var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 700; cursor: pointer;" onclick="selectProductSize(this)">S</button>
+              <button type="button" class="size-btn" style="width: 40px; height: 38px; border-radius: 8px; border: 1.5px solid var(--border-color); background: #fff; color: var(--text-main); font-weight: 700; cursor: pointer;" onclick="selectProductSize(this)">M</button>
+              <button type="button" class="size-btn" style="width: 40px; height: 38px; border-radius: 8px; border: 1.5px solid var(--border-color); background: #fff; color: var(--text-main); font-weight: 700; cursor: pointer;" onclick="selectProductSize(this)">L</button>
+              <button type="button" class="size-btn" style="width: 40px; height: 38px; border-radius: 8px; border: 1.5px solid var(--border-color); background: #fff; color: var(--text-main); font-weight: 700; cursor: pointer;" onclick="selectProductSize(this)">XL</button>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--secondary);">Số lượng mua:</span>
+            <span style="font-size: 0.8rem; color: var(--success); font-weight: 700;">🟢 Còn hàng (${product.stock || 25} có sẵn)</span>
+          </div>
+
+          <div class="qty-control" style="margin-bottom: 22px;">
+            <button type="button" class="qty-btn" onclick="changeModalQty(-1)">-</button>
+            <input type="text" id="modal-qty" class="qty-input" value="1" readonly>
+            <button type="button" class="qty-btn" onclick="changeModalQty(1)">+</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: auto;">
+            <button type="button" class="btn-secondary" style="justify-content: center; padding: 12px;" onclick="addCurrentModalToCart()">
+              🛒 Thêm vào giỏ
+            </button>
+            <button type="button" class="btn-primary" style="justify-content: center; padding: 12px;" onclick="buyNowFromModal()">
+              ⚡ Mua Ngay
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 
   modal.classList.add('active');
-}
+};
+
+window.openQuickView = window.openProductDetail;
+
+window.selectProductSize = function(btn) {
+  document.querySelectorAll('#modal-size-selector .size-btn').forEach(b => {
+    b.style.borderColor = 'var(--border-color)';
+    b.style.background = '#fff';
+    b.style.color = 'var(--text-main)';
+  });
+  btn.style.borderColor = 'var(--primary)';
+  btn.style.background = 'var(--primary-light)';
+  btn.style.color = 'var(--primary)';
+};
+
+window.buyNowFromModal = function() {
+  if (!currentModalProduct) return;
+  const qty = parseInt(document.getElementById('modal-qty').value) || 1;
+  addToCart(currentModalProduct, qty);
+  closeQuickView();
+  window.location.href = 'cart.html';
+};
+
+window.addToCartById = function(id) {
+  let product = null;
+  if (typeof allProducts !== 'undefined' && Array.isArray(allProducts)) {
+    product = allProducts.find(p => p.id === id);
+  }
+  if (product) {
+    addToCart(product, 1);
+  } else {
+    fetch(`/api/products/${id}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) addToCart(data.data, 1);
+      });
+  }
+};
 
 function closeQuickView() {
   const modal = document.getElementById('quick-view-modal');

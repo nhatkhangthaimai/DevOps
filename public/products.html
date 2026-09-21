@@ -21,10 +21,10 @@
 
       <nav class="nav-menu">
         <a href="index.html" class="nav-link">Trang Chủ</a>
-        <a href="products.html" class="nav-link active">Tất Cả Sản Phẩm</a>
-        <a href="products.html?category=ao" class="nav-link">Áo Nam/Nữ</a>
-        <a href="products.html?category=quan" class="nav-link">Quần Tây/Jeans</a>
-        <a href="products.html?category=dam" class="nav-link">Váy Đầm</a>
+        <a href="products.html" class="nav-link active" onclick="event.preventDefault(); filterByCategory('all');">Tất Cả Sản Phẩm</a>
+        <a href="products.html?category=ao" class="nav-link" onclick="event.preventDefault(); filterByCategory('ao');">Áo Nam/Nữ</a>
+        <a href="products.html?category=quan" class="nav-link" onclick="event.preventDefault(); filterByCategory('quan');">Quần Tây/Jeans</a>
+        <a href="products.html?category=dam" class="nav-link" onclick="event.preventDefault(); filterByCategory('dam');">Váy Đầm Nữ</a>
       </nav>
 
       <div class="nav-actions">
@@ -43,7 +43,9 @@
       <div class="breadcrumb">
         <a href="index.html">Trang chủ</a>
         <span class="breadcrumb-separator">/</span>
-        <span style="color: var(--secondary); font-weight: 600;">Sản phẩm</span>
+        <a href="products.html" onclick="event.preventDefault(); filterByCategory('all');">Sản phẩm</a>
+        <span class="breadcrumb-separator">/</span>
+        <span style="color: var(--secondary); font-weight: 700;" id="breadcrumb-category">Tất cả sản phẩm</span>
       </div>
 
       <div class="catalog-layout">

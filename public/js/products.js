@@ -84,28 +84,28 @@ function renderProducts(products) {
 
     return `
       <div class="product-card">
-        <div class="product-thumb-wrap">
+        <div class="product-thumb-wrap" onclick="openProductDetail('${product.id}')" style="cursor: pointer;" title="Bấm để xem chi tiết ${product.name}">
           <img src="${product.image}" alt="${product.name}" loading="lazy">
           <div class="product-badges">
             ${badgeHtml}
           </div>
-          <button class="product-quick-btn" onclick='openQuickView(${JSON.stringify(product).replace(/'/g, "&apos;")})'>
-            👁 Xem nhanh
+          <button type="button" class="product-quick-btn" onclick="event.stopPropagation(); openProductDetail('${product.id}')">
+            👁 Xem chi tiết
           </button>
         </div>
         <div class="product-content">
           <span class="product-cat">${product.categoryName || product.category}</span>
-          <h3 class="product-name" title="${product.name}">${product.name}</h3>
+          <h3 class="product-name" onclick="openProductDetail('${product.id}')" style="cursor: pointer;" title="Bấm để xem chi tiết ${product.name}">${product.name}</h3>
           <div class="product-rating">
             <span>★ ${product.rating || 5.0}</span>
             <span>(${product.reviewsCount || 0})</span>
           </div>
           <div class="product-footer">
-            <div class="price-wrap">
+            <div class="price-wrap" onclick="openProductDetail('${product.id}')" style="cursor: pointer;">
               <span class="product-price">${formatVND(product.price)}</span>
               ${origPriceHtml}
             </div>
-            <button class="btn-add-cart" title="Thêm vào giỏ" onclick='addToCart(${JSON.stringify(product).replace(/'/g, "&apos;")})'>
+            <button type="button" class="btn-add-cart" title="Thêm vào giỏ" onclick="event.stopPropagation(); addToCartById('${product.id}')">
               +
             </button>
           </div>
@@ -115,10 +115,44 @@ function renderProducts(products) {
   }).join('');
 }
 
+// Đồng bộ trạng thái active trên thanh Navbar và Breadcrumb
+function updateNavbarAndBreadcrumb(cat) {
+  // Đồng bộ Navbar phía trên
+  const navLinks = document.querySelectorAll('.nav-menu .nav-link');
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    const href = link.getAttribute('href') || '';
+    if (!cat || cat === 'all') {
+      if (href.endsWith('products.html') || href.includes('category=all')) {
+        link.classList.add('active');
+      }
+    } else {
+      if (href.includes(`category=${cat}`)) {
+        link.classList.add('active');
+      }
+    }
+  });
+
+  // Tên danh mục hiển thị trên Breadcrumb
+  const catNames = {
+    'all': 'Tất cả sản phẩm',
+    'ao': 'Áo Nam/Nữ',
+    'quan': 'Quần Tây/Jeans',
+    'dam': 'Váy Đầm Nữ',
+    'ao-khoac': 'Áo Khoác & Blazer',
+    'phu-kien': 'Phụ Kiện Đồ Da'
+  };
+
+  const breadcrumbEl = document.getElementById('breadcrumb-category');
+  if (breadcrumbEl) {
+    breadcrumbEl.textContent = catNames[cat] || 'Sản phẩm';
+  }
+}
+
 function filterByCategory(cat) {
   currentCategory = cat;
   
-  // Update sidebar active states
+  // Cập nhật active trên Sidebar bộ lọc bên trái
   document.querySelectorAll('.cat-filter-item').forEach(el => {
     if (el.dataset.category === cat) {
       el.classList.add('active');
@@ -127,7 +161,10 @@ function filterByCategory(cat) {
     }
   });
 
-  // Update URL search params without reload
+  // Cập nhật active trên Navbar và Breadcrumb
+  updateNavbarAndBreadcrumb(cat);
+
+  // Cập nhật URL trình duyệt
   const url = new URL(window.location);
   if (cat === 'all') url.searchParams.delete('category');
   else url.searchParams.set('category', cat);
@@ -179,6 +216,8 @@ function resetFilters() {
     el.classList.toggle('active', el.dataset.category === 'all');
   });
 
+  updateNavbarAndBreadcrumb('all');
+
   const url = new URL(window.location);
   url.search = '';
   window.history.pushState({}, '', url);
@@ -204,6 +243,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.cat-filter-item').forEach(el => {
     el.classList.toggle('active', el.dataset.category === currentCategory);
   });
+
+  // Active đúng danh mục trên Navbar và Breadcrumb
+  updateNavbarAndBreadcrumb(currentCategory);
 
   // Gắn event debounce tìm kiếm
   const searchInput = document.getElementById('search-input');
