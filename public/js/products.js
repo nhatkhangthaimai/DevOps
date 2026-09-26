@@ -85,7 +85,7 @@ function renderProducts(products) {
     return `
       <div class="product-card">
         <div class="product-thumb-wrap" onclick="openProductDetail('${product.id}')" style="cursor: pointer;" title="Bấm để xem chi tiết ${product.name}">
-          <img src="${product.image}" alt="${product.name}" loading="lazy">
+          <img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=600&auto=format&fit=crop&q=80'">
           <div class="product-badges">
             ${badgeHtml}
           </div>

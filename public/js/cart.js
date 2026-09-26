@@ -12,11 +12,13 @@ function renderCart() {
   const contentEl = document.getElementById('cart-content-view');
   const countBadge = document.getElementById('cart-items-count');
 
-  if (!listEl) return;
-
   if (countBadge) {
-    countBadge.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    countBadge.textContent = totalCount;
+    countBadge.style.display = totalCount > 0 ? 'flex' : 'none';
   }
+
+  if (!listEl) return;
 
   if (cart.length === 0) {
     if (emptyEl) emptyEl.style.display = 'block';
@@ -27,16 +29,23 @@ function renderCart() {
   if (emptyEl) emptyEl.style.display = 'none';
   if (contentEl) contentEl.style.display = 'grid';
 
+  const fallbackImg = 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=600&auto=format&fit=crop&q=80';
+
   listEl.innerHTML = cart.map((item, index) => {
     const itemTotal = item.price * item.quantity;
+    const sizeBadge = item.size ? `<span style="margin-left: 8px; padding: 2px 8px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-weight: 700; font-size: 0.78rem;">Size: ${item.size}</span>` : '';
+
     return `
       <div class="cart-item">
         <div class="cart-item-img">
-          <img src="${item.image}" alt="${item.name}">
+          <img src="${item.image}" alt="${item.name}" onerror="this.onerror=null; this.src='${fallbackImg}'">
         </div>
         <div class="cart-item-info">
           <h4>${item.name}</h4>
-          <div class="item-unit-price">${formatVND(item.price)}</div>
+          <div class="item-unit-price">
+            ${formatVND(item.price)}
+            ${sizeBadge}
+          </div>
         </div>
         <div class="qty-control" style="margin-bottom: 0;">
           <button class="qty-btn" onclick="updateItemQuantity(${index}, -1)">-</button>
@@ -93,6 +102,15 @@ function clearAllCart() {
 function calculateSummary() {
   const cart = getCart();
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  // Tính toán lại số tiền discount linh hoạt theo Subtotal hiện tại
+  if (appliedDiscountCode === 'GIAM10') {
+    appliedDiscount = Math.round(subtotal * 0.1);
+  } else if (appliedDiscountCode === 'FREESHIP') {
+    appliedDiscount = 0;
+  } else {
+    appliedDiscount = 0;
+  }
   
   // Miễn phí vận chuyển cho đơn trên 500.000₫, dưới 500k phí ship 30.000₫
   let shippingFee = subtotal > 500000 || subtotal === 0 ? 0 : 30000;
@@ -119,15 +137,12 @@ function applyPromoCode() {
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   if (code === 'GIAM10') {
-    appliedDiscount = Math.round(subtotal * 0.1);
     appliedDiscountCode = 'GIAM10';
     showToast('Áp dụng mã GIAM10 thành công! Giảm 10%', 'success');
   } else if (code === 'FREESHIP') {
-    appliedDiscount = 0;
     appliedDiscountCode = 'FREESHIP';
     showToast('Áp dụng mã FREESHIP thành công! Miễn phí vận chuyển', 'success');
   } else if (code === '') {
-    appliedDiscount = 0;
     appliedDiscountCode = '';
   } else {
     showToast('Mã khuyến mãi không hợp lệ hoặc đã hết hạn', 'error');

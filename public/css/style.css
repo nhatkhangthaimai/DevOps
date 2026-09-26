@@ -1088,6 +1088,20 @@ button, input, select, textarea {
 
 @media (max-width: 768px) {
   .nav-menu { display: none; }
+  .nav-menu.active {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 76px;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+    gap: 16px;
+    z-index: 99;
+  }
   .mobile-toggle { display: block; }
   .modal-body { grid-template-columns: 1fr; }
   .benefits-grid { grid-template-columns: 1fr; }
@@ -1140,21 +1154,32 @@ button, input, select, textarea {
 
 .user-dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 4px);
   right: 0;
   background: #fff;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-xl);
   border: 1px solid var(--border-color);
-  min-width: 200px;
+  min-width: 210px;
   padding: 8px 0;
   display: none;
   z-index: 105;
   animation: slideIn 0.2s ease;
 }
 
+.user-dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: transparent;
+}
+
 .user-dropdown-wrap:hover .user-dropdown-menu,
-.user-dropdown-wrap.open .user-dropdown-menu {
+.user-dropdown-wrap.open .user-dropdown-menu,
+.user-dropdown-wrap.active .user-dropdown-menu {
   display: block;
 }
 

@@ -111,13 +111,20 @@ function filterAndRenderOrders() {
         </td>
         <td>${getStatusBadge(order.status)}</td>
         <td style="text-align: right;">
-          <button class="btn-sm btn-sm-primary" onclick='openOrderModal(${JSON.stringify(order).replace(/'/g, "&apos;")})'>
+          <button class="btn-sm btn-sm-primary" onclick="openOrderModalById('${order.id}')">
             👁 Xem & Cập nhật
           </button>
         </td>
       </tr>
     `;
   }).join('');
+}
+
+function openOrderModalById(id) {
+  const order = ordersList.find(o => o.id === id);
+  if (order) {
+    openOrderModal(order);
+  }
 }
 
 function openOrderModal(order) {
@@ -140,6 +147,7 @@ function openOrderModal(order) {
       <td style="padding: 10px 14px; display: flex; align-items: center; gap: 10px;">
         <img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
         <span style="font-weight: 600;">${item.name}</span>
+        ${item.size ? `<span style="margin-left: 6px; padding: 2px 6px; background: #e0e7ff; color: #4338ca; border-radius: 4px; font-weight: 700; font-size: 0.75rem;">Size: ${item.size}</span>` : ''}
       </td>
       <td style="padding: 10px 14px; text-align: center;">${item.quantity}</td>
       <td style="padding: 10px 14px; text-align: right;">${formatVND(item.price)}</td>

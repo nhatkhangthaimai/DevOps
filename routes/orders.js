@@ -37,6 +37,7 @@ router.post('/', async (req, res) => {
       items: items.map(item => ({
         id: item.id,
         name: item.name,
+        size: item.size || 'S',
         price: Number(item.price),
         quantity: Number(item.quantity) || 1,
         image: item.image || ''

@@ -42,9 +42,10 @@ function updateCartBadge() {
   });
 }
 
-function addToCart(product, quantity = 1) {
+function addToCart(product, quantity = 1, size = 'S') {
   const cart = getCart();
-  const existingIndex = cart.findIndex(item => item.id === product.id);
+  const selectedSize = size || product.size || 'S';
+  const existingIndex = cart.findIndex(item => item.id === product.id && item.size === selectedSize);
 
   if (existingIndex > -1) {
     cart[existingIndex].quantity += Number(quantity);
@@ -56,13 +57,22 @@ function addToCart(product, quantity = 1) {
       image: product.image,
       category: product.category,
       categoryName: product.categoryName,
+      size: selectedSize,
       quantity: Number(quantity)
     });
   }
 
   saveCart(cart);
-  showToast(`Đã thêm "${product.name}" vào giỏ hàng!`, 'success');
+  showToast(`Đã thêm "${product.name}" (Size ${selectedSize}) vào giỏ hàng!`, 'success');
 }
+
+// Global Mobile Menu Toggle Handler
+window.toggleMobileMenu = function() {
+  const navMenu = document.getElementById('nav-menu') || document.querySelector('.nav-menu');
+  if (navMenu) {
+    navMenu.classList.toggle('active');
+  }
+};
 
 // Hệ thống Toast Notification
 function showToast(message, type = 'success') {
@@ -100,6 +110,7 @@ function showToast(message, type = 'success') {
 
 // Modal Xem chi tiết Sản phẩm (Product Detail Modal)
 let currentModalProduct = null;
+let currentModalSelectedSize = 'S';
 
 window.openProductDetail = async function(idOrProduct) {
   let product = null;
@@ -127,6 +138,7 @@ window.openProductDetail = async function(idOrProduct) {
   }
 
   currentModalProduct = product;
+  currentModalSelectedSize = 'S';
 
   let modal = document.getElementById('quick-view-modal');
   if (!modal) {
@@ -146,12 +158,14 @@ window.openProductDetail = async function(idOrProduct) {
 
   const stars = '★'.repeat(Math.round(product.rating || 5)) + '☆'.repeat(5 - Math.round(product.rating || 5));
 
+  const fallbackImg = 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=600&auto=format&fit=crop&q=80';
+
   modal.innerHTML = `
     <div class="modal-box" style="max-width: 820px;">
       <button class="modal-close-btn" onclick="closeQuickView()">&times;</button>
       <div class="modal-body" style="padding: 32px; gap: 32px;">
         <div class="modal-img-wrap" style="position: relative; border-radius: var(--radius-lg); overflow: hidden; background: #f8fafc;">
-          <img id="modal-img" src="${product.image}" alt="${product.name}">
+          <img id="modal-img" src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.src='${fallbackImg}'">
           ${product.badge ? `<span style="position: absolute; top: 12px; left: 12px; background: var(--accent); color: #fff; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 800;">${product.badge}</span>` : ''}
         </div>
         <div class="modal-details" style="display: flex; flex-direction: column;">
@@ -217,16 +231,19 @@ window.selectProductSize = function(btn) {
     b.style.borderColor = 'var(--border-color)';
     b.style.background = '#fff';
     b.style.color = 'var(--text-main)';
+    b.classList.remove('active');
   });
   btn.style.borderColor = 'var(--primary)';
   btn.style.background = 'var(--primary-light)';
   btn.style.color = 'var(--primary)';
+  btn.classList.add('active');
+  currentModalSelectedSize = btn.textContent.trim();
 };
 
 window.buyNowFromModal = function() {
   if (!currentModalProduct) return;
   const qty = parseInt(document.getElementById('modal-qty').value) || 1;
-  addToCart(currentModalProduct, qty);
+  addToCart(currentModalProduct, qty, currentModalSelectedSize);
   closeQuickView();
   window.location.href = 'cart.html';
 };
@@ -264,7 +281,7 @@ function changeModalQty(delta) {
 function addCurrentModalToCart() {
   if (!currentModalProduct) return;
   const qty = parseInt(document.getElementById('modal-qty').value) || 1;
-  addToCart(currentModalProduct, qty);
+  addToCart(currentModalProduct, qty, currentModalSelectedSize);
   closeQuickView();
 }
 
@@ -291,6 +308,20 @@ async function checkCustomerAuth() {
   }
 }
 
+window.toggleUserDropdown = function(e) {
+  if (e) e.stopPropagation();
+  const wrap = e ? e.currentTarget.closest('.user-dropdown-wrap') : document.querySelector('.user-dropdown-wrap');
+  if (wrap) {
+    wrap.classList.toggle('active');
+  }
+};
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.user-dropdown-wrap')) {
+    document.querySelectorAll('.user-dropdown-wrap.active, .user-dropdown-wrap.open').forEach(w => w.classList.remove('active', 'open'));
+  }
+});
+
 function renderCustomerAuthButton() {
   const actionsContainers = document.querySelectorAll('.nav-actions');
   actionsContainers.forEach(container => {
@@ -304,7 +335,7 @@ function renderCustomerAuthButton() {
     if (currentCustomer) {
       authWrapper.innerHTML = `
         <div class="user-dropdown-wrap">
-          <button type="button" class="user-dropdown-toggle">
+          <button type="button" class="user-dropdown-toggle" onclick="toggleUserDropdown(event)">
             👤 <span>${currentCustomer.fullName.split(' ').pop() || 'Tài khoản'}</span> ▾
           </button>
           <div class="user-dropdown-menu">
@@ -312,10 +343,10 @@ function renderCustomerAuthButton() {
               <div>Xin chào, <strong>${currentCustomer.fullName}</strong></div>
               <div>${currentCustomer.email}</div>
             </div>
-            <button type="button" class="user-dropdown-item" onclick="openMyOrdersModal()">
+            <button type="button" class="user-dropdown-item" onclick="openMyOrdersModal(); event.stopPropagation();">
               📦 Đơn hàng của tôi
             </button>
-            <button type="button" class="user-dropdown-item danger" onclick="handleCustomerLogout()">
+            <button type="button" class="user-dropdown-item danger" onclick="handleCustomerLogout(); event.stopPropagation();">
               🚪 Đăng xuất
             </button>
           </div>
@@ -488,6 +519,11 @@ async function handleCustomerRegisterSubmit(e) {
   const address = document.getElementById('reg-address').value.trim();
   const btn = document.getElementById('btn-customer-register');
 
+  if (password.length < 3) {
+    showToast('Mật khẩu phải có ít nhất 3 ký tự!', 'error');
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = 'Đang tạo tài khoản...';
 
@@ -522,6 +558,7 @@ async function handleCustomerLogout() {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
       currentCustomer = null;
+      closeMyOrdersModal();
       renderCustomerAuthButton();
       showToast('Đã đăng xuất tài khoản', 'info');
     } catch (err) {
@@ -599,7 +636,7 @@ async function openMyOrdersModal() {
           <div style="font-size: 0.88rem; margin-bottom: 8px;">
             ${(order.items || []).map(item => `
               <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                <span>${item.name} x${item.quantity}</span>
+                <span>${item.name} ${item.size ? `(Size ${item.size})` : ''} x${item.quantity}</span>
                 <strong>${formatVND(item.price * item.quantity)}</strong>
               </div>
             `).join('')}

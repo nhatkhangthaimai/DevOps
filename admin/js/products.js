@@ -60,10 +60,10 @@ function renderAdminProducts(products) {
         <td>${badgeStr}</td>
         <td style="text-align: right;">
           <div class="btn-action-group" style="justify-content: flex-end;">
-            <button class="btn-sm btn-sm-edit" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
+            <button class="btn-sm btn-sm-edit" onclick="editProductById('${p.id}')">
               ✏️ Sửa
             </button>
-            <button class="btn-sm btn-sm-danger" onclick="deleteProduct('${p.id}', '${p.name}')">
+            <button class="btn-sm btn-sm-danger" onclick="deleteProductById('${p.id}')">
               🗑️ Xóa
             </button>
           </div>
@@ -107,6 +107,19 @@ function closeProductModal() {
 
 function editProduct(product) {
   openProductModal(product);
+}
+
+function editProductById(id) {
+  const product = productsList.find(p => p.id === id);
+  if (product) {
+    openProductModal(product);
+  }
+}
+
+async function deleteProductById(id) {
+  const product = productsList.find(p => p.id === id);
+  const name = product ? product.name : id;
+  deleteProduct(id, name);
 }
 
 async function deleteProduct(id, name) {
