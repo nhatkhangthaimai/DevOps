@@ -77,6 +77,63 @@ async function testEndpoints() {
   const dataHealth = await resHealth.json();
   console.log('7. GET /health:', dataHealth.status);
 
+  // Test 8: GET /api/admin/users (Admin lấy danh sách user)
+  const resUsers = await fetch('http://localhost:3000/api/admin/users', {
+    headers: { Cookie: cookies || '' }
+  });
+  const dataUsers = await resUsers.json();
+  console.log('8. GET /api/admin/users:', dataUsers.success, '| Số lượng user:', dataUsers.count);
+
+  // Test 9: POST /api/admin/users (Admin thêm user mới)
+  const testNewUser = {
+    fullName: 'Test Admin Created User',
+    email: `testadmin_${Date.now()}@example.com`,
+    password: 'password123',
+    phone: '0977665544',
+    address: '456 Lê Lợi, Quận 1, TP.HCM'
+  };
+  const resCreateUser = await fetch('http://localhost:3000/api/admin/users', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: cookies || ''
+    },
+    body: JSON.stringify(testNewUser)
+  });
+  const dataCreateUser = await resCreateUser.json();
+  const createdUserId = dataCreateUser.data?.id;
+  console.log('9. POST /api/admin/users:', dataCreateUser.success, '| ID tạo:', createdUserId);
+
+  // Test 10: GET /api/admin/users/:id (Admin xem chi tiết user)
+  const resUserDetail = await fetch(`http://localhost:3000/api/admin/users/${createdUserId}`, {
+    headers: { Cookie: cookies || '' }
+  });
+  const dataUserDetail = await resUserDetail.json();
+  console.log('10. GET /api/admin/users/:id:', dataUserDetail.success, '| User:', dataUserDetail.data?.fullName);
+
+  // Test 11: PUT /api/admin/users/:id (Admin cập nhật user)
+  const resUpdateUser = await fetch(`http://localhost:3000/api/admin/users/${createdUserId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: cookies || ''
+    },
+    body: JSON.stringify({
+      fullName: 'Test Admin Created User (Updated)',
+      phone: '0977999888'
+    })
+  });
+  const dataUpdateUser = await resUpdateUser.json();
+  console.log('11. PUT /api/admin/users/:id:', dataUpdateUser.success, '| Tên mới:', dataUpdateUser.data?.fullName);
+
+  // Test 12: DELETE /api/admin/users/:id (Admin xóa user vừa tạo thử nghiệm)
+  const resDeleteUser = await fetch(`http://localhost:3000/api/admin/users/${createdUserId}`, {
+    method: 'DELETE',
+    headers: { Cookie: cookies || '' }
+  });
+  const dataDeleteUser = await resDeleteUser.json();
+  console.log('12. DELETE /api/admin/users/:id:', dataDeleteUser.success, '| Message:', dataDeleteUser.message);
+
   console.log('--- Hoàn tất kiểm tra API! Tất cả đều phản hồi chuẩn xác ---');
 }
 

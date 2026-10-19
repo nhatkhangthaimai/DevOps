@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Người Dùng | Fashion Store Mini</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo-icon">✨</div>
+        <div class="sidebar-brand">
+          <h3>FASHION MINI</h3>
+          <span>Admin Portal</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li>
+          <a href="dashboard.html" class="sidebar-link">
+            <span class="sidebar-icon">📊</span>
+            <span>Tổng Quan (Dashboard)</span>
+          </a>
+        </li>
+        <li>
+          <a href="products.html" class="sidebar-link">
+            <span class="sidebar-icon">👕</span>
+            <span>Quản Lý Sản Phẩm</span>
+          </a>
+        </li>
+        <li>
+          <a href="orders.html" class="sidebar-link">
+            <span class="sidebar-icon">📦</span>
+            <span>Quản Lý Đơn Hàng</span>
+          </a>
+        </li>
+        <li>
+          <a href="users.html" class="sidebar-link active">
+            <span class="sidebar-icon">👥</span>
+            <span>Quản Lý Người Dùng</span>
+          </a>
+        </li>
+        <li style="margin-top: 15px; border-top: 1px solid #1e293b; padding-top: 15px;">
+          <a href="/" target="_blank" class="sidebar-link">
+            <span class="sidebar-icon">🌐</span>
+            <span>Xem Cửa Hàng (Client)</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button class="btn-logout" onclick="handleLogout()">
+          🚪 Đăng Xuất
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-title">
+          <h2>Quản Lý Tài Khoản Khách Hàng</h2>
+          <span>Quản lý danh sách người dùng, cập nhật thông tin và xem lịch sử đơn hàng</span>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="admin-user-pill">
+            <div class="user-avatar">AD</div>
+            <span class="user-name">admin (Demo)</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Users Management Content -->
+      <div class="admin-content">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; flex: 1;">
+              <input type="text" id="admin-user-search" placeholder="🔍 Tìm kiếm theo tên, email, số điện thoại..." style="padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; min-width: 320px; outline: none;">
+            </div>
+
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <div style="font-size: 0.88rem; color: var(--text-muted);">
+                Tổng số tài khoản: <strong id="users-total-count">0</strong>
+              </div>
+              <button class="btn-sm btn-sm-primary" style="padding: 10px 18px; font-size: 0.9rem;" onclick="openAddUserModal()">
+                + Thêm Người Dùng
+              </button>
+            </div>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Khách Hàng</th>
+                  <th>Số Điện Thoại</th>
+                  <th>Địa Chỉ</th>
+                  <th>Đơn Hàng</th>
+                  <th>Ngày Đăng Ký</th>
+                  <th style="text-align: right;">Hành Động</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                    Đang tải danh sách người dùng...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- User Modal (Add / Edit) -->
+  <div class="admin-modal" id="user-modal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="user-modal-title">Thêm Người Dùng Mới</h3>
+        <button type="button" onclick="closeUserModal()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+
+      <form id="user-form">
+        <input type="hidden" id="user-id">
+        <div class="admin-modal-body">
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Họ và tên *</label>
+            <input type="text" id="user-fullname" required placeholder="VD: Nguyễn Văn A" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Email đăng nhập *</label>
+              <input type="email" id="user-email" required placeholder="user@example.com" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Số điện thoại</label>
+              <input type="tel" id="user-phone" placeholder="VD: 0988888888" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;" id="user-password-label">Mật khẩu *</label>
+            <input type="password" id="user-password" placeholder="Nhập mật khẩu..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;">
+            <small style="color: var(--text-muted); font-size: 0.78rem; display: block; margin-top: 4px;" id="user-password-hint">Mật khẩu để khách đăng nhập tài khoản.</small>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Địa chỉ giao hàng mặc định</label>
+            <textarea id="user-address" rows="3" placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; outline: none;"></textarea>
+          </div>
+        </div>
+
+        <div class="admin-modal-footer">
+          <button type="button" class="btn-sm btn-sm-edit" onclick="closeUserModal()">Hủy</button>
+          <button type="submit" class="btn-sm btn-sm-primary" id="btn-save-user">Lưu Tài Khoản</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- User Detail & Orders Modal -->
+  <div class="admin-modal" id="user-detail-modal">
+    <div class="admin-modal-card" style="max-width: 720px;">
+      <div class="admin-modal-header">
+        <h3 id="modal-detail-name">Hồ Sơ Chi Tiết Khách Hàng</h3>
+        <button type="button" onclick="closeUserDetailModal()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+
+      <div class="admin-modal-body">
+        <!-- Profile Card -->
+        <div style="display: flex; gap: 20px; align-items: flex-start; background: var(--bg-main); border-radius: 12px; padding: 20px; margin-bottom: 24px; border: 1px solid var(--border);">
+          <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; flex-shrink: 0;" id="modal-detail-avatar">
+            KH
+          </div>
+          <div style="flex: 1; font-size: 0.9rem; line-height: 1.7;">
+            <h4 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);" id="modal-detail-fullname">--</h4>
+            <div style="color: var(--text-muted);"><strong>Email:</strong> <span id="modal-detail-email">--</span></div>
+            <div style="color: var(--text-muted);"><strong>Số điện thoại:</strong> <span id="modal-detail-phone">--</span></div>
+            <div style="color: var(--text-muted);"><strong>Địa chỉ:</strong> <span id="modal-detail-address">--</span></div>
+            <div style="color: var(--text-muted);"><strong>Ngày đăng ký:</strong> <span id="modal-detail-created">--</span></div>
+          </div>
+          <div style="text-align: right; border-left: 1px solid var(--border); padding-left: 20px;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Tổng chi tiêu</div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;" id="modal-detail-spent">0₫</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Số đơn hàng</div>
+            <div style="font-size: 1.1rem; font-weight: 700;" id="modal-detail-orders-count">0 đơn</div>
+          </div>
+        </div>
+
+        <!-- Orders Table -->
+        <h4 style="font-size: 1rem; font-weight: 800; margin-bottom: 12px;">Lịch Sử Đơn Hàng Đã Đặt</h4>
+        <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
+            <thead style="background: #f8fafc; text-align: left;">
+              <tr>
+                <th style="padding: 10px 14px;">Mã Đơn</th>
+                <th style="padding: 10px 14px;">Ngày Đặt</th>
+                <th style="padding: 10px 14px;">Số Món</th>
+                <th style="padding: 10px 14px; text-align: right;">Tổng Tiền</th>
+                <th style="padding: 10px 14px;">Trạng Thái</th>
+                <th style="padding: 10px 14px; text-align: center;">Chi Tiết</th>
+              </tr>
+            </thead>
+            <tbody id="modal-user-orders-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button type="button" class="btn-sm btn-sm-edit" onclick="closeUserDetailModal()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/users.js"></script>
+</body>
+</html>

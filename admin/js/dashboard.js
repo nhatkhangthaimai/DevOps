@@ -44,6 +44,9 @@ async function loadDashboardStats() {
     document.getElementById('kpi-orders').textContent = stats.totalOrders || 0;
     document.getElementById('kpi-products').textContent = stats.totalProducts || 0;
     document.getElementById('kpi-pending').textContent = stats.pendingOrders || 0;
+    if (document.getElementById('kpi-users')) {
+      document.getElementById('kpi-users').textContent = stats.totalUsers || 0;
+    }
 
     const tbody = document.getElementById('recent-orders-tbody');
     if (!stats.recentOrders || stats.recentOrders.length === 0) {

@@ -11,7 +11,7 @@
   --sidebar-text: #94a3b8;
   --sidebar-active: #ffffff;
   
-  --bg-main: red;
+  --bg-main: #f8fafc;
   --card-bg: #ffffff;
   --border: #e2e8f0;
   
@@ -251,7 +251,7 @@ a {
 /* KPI Cards */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 20px;
   margin-bottom: 30px;
 }

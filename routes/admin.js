@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { requireAdmin } = require('../middleware/auth');
-const { getProducts, saveProducts, getOrders, saveOrders } = require('../utils/db');
+const { getProducts, saveProducts, getOrders, saveOrders, getUsers, saveUsers } = require('../utils/db');
 
 const ADMIN_USERNAME = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASS || 'admin123';
@@ -92,9 +92,11 @@ router.get('/stats', requireAdmin, async (req, res) => {
   try {
     const products = await getProducts();
     const orders = await getOrders();
+    const users = await getUsers();
 
     const totalProducts = products.length;
     const totalOrders = orders.length;
+    const totalUsers = users.length;
 
     // Doanh thu: tính các đơn không bị hủy
     const totalRevenue = orders
@@ -114,6 +116,7 @@ router.get('/stats', requireAdmin, async (req, res) => {
         totalRevenue,
         totalOrders,
         totalProducts,
+        totalUsers,
         pendingOrders,
         processingOrders,
         deliveredOrders,
@@ -309,6 +312,226 @@ router.put('/orders/:id', requireAdmin, async (req, res) => {
   } catch (error) {
     console.error('Error updating order:', error);
     res.status(500).json({ success: false, message: 'Lỗi khi cập nhật đơn hàng' });
+  }
+});
+
+// GET /api/admin/users - Danh sách tất cả người dùng
+router.get('/users', requireAdmin, async (req, res) => {
+  try {
+    const users = await getUsers();
+    const orders = await getOrders();
+
+    const usersWithStats = users.map(user => {
+      const userOrders = orders.filter(o =>
+        (o.userId && o.userId === user.id) ||
+        (o.customer && o.customer.email && o.customer.email.toLowerCase() === user.email.toLowerCase()) ||
+        (o.customer && o.customer.phone && user.phone && o.customer.phone === user.phone)
+      );
+
+      const totalSpent = userOrders
+        .filter(o => o.status !== 'cancelled')
+        .reduce((sum, o) => sum + (o.total || 0), 0);
+
+      return {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone || '',
+        address: user.address || '',
+        createdAt: user.createdAt || null,
+        ordersCount: userOrders.length,
+        totalSpent
+      };
+    });
+
+    res.json({
+      success: true,
+      count: usersWithStats.length,
+      data: usersWithStats
+    });
+  } catch (error) {
+    console.error('Error fetching admin users:', error);
+    res.status(500).json({ success: false, message: 'Lỗi khi tải danh sách người dùng' });
+  }
+});
+
+// GET /api/admin/users/:id - Lấy thông tin chi tiết người dùng và lịch sử đơn hàng
+router.get('/users/:id', requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const users = await getUsers();
+    const user = users.find(u => u.id === id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng' });
+    }
+
+    const orders = await getOrders();
+    const userOrders = orders.filter(o =>
+      (o.userId && o.userId === user.id) ||
+      (o.customer && o.customer.email && o.customer.email.toLowerCase() === user.email.toLowerCase()) ||
+      (o.customer && o.customer.phone && user.phone && o.customer.phone === user.phone)
+    );
+
+    const totalSpent = userOrders
+      .filter(o => o.status !== 'cancelled')
+      .reduce((sum, o) => sum + (o.total || 0), 0);
+
+    res.json({
+      success: true,
+      data: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone || '',
+        address: user.address || '',
+        createdAt: user.createdAt || null,
+        ordersCount: userOrders.length,
+        totalSpent,
+        orders: userOrders
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching user detail:', error);
+    res.status(500).json({ success: false, message: 'Lỗi khi tải chi tiết người dùng' });
+  }
+});
+
+// POST /api/admin/users - Thêm người dùng mới
+router.post('/users', requireAdmin, async (req, res) => {
+  try {
+    const { fullName, email, password, phone, address } = req.body;
+
+    if (!fullName || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Họ tên, email và mật khẩu là các trường bắt buộc'
+      });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const users = await getUsers();
+
+    const existing = users.find(u => u.email.toLowerCase() === cleanEmail);
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email này đã tồn tại trong hệ thống. Vui lòng chọn email khác.'
+      });
+    }
+
+    const newUser = {
+      id: 'user-' + Date.now().toString().slice(-6),
+      fullName: fullName.trim(),
+      email: cleanEmail,
+      password: password.trim(),
+      phone: (phone || '').trim(),
+      address: (address || '').trim(),
+      createdAt: new Date().toISOString()
+    };
+
+    users.unshift(newUser);
+    await saveUsers(users);
+
+    res.status(201).json({
+      success: true,
+      message: 'Thêm người dùng mới thành công',
+      data: {
+        id: newUser.id,
+        fullName: newUser.fullName,
+        email: newUser.email,
+        phone: newUser.phone,
+        address: newUser.address,
+        createdAt: newUser.createdAt,
+        ordersCount: 0,
+        totalSpent: 0
+      }
+    });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ success: false, message: 'Lỗi khi thêm người dùng mới' });
+  }
+});
+
+// PUT /api/admin/users/:id - Cập nhật thông tin người dùng
+router.put('/users/:id', requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { fullName, email, password, phone, address } = req.body;
+
+    const users = await getUsers();
+    const index = users.findIndex(u => u.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng' });
+    }
+
+    const existing = users[index];
+
+    let cleanEmail = existing.email;
+    if (email) {
+      cleanEmail = email.trim().toLowerCase();
+      const duplicate = users.find(u => u.id !== id && u.email.toLowerCase() === cleanEmail);
+      if (duplicate) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email này đã được sử dụng bởi người dùng khác.'
+        });
+      }
+    }
+
+    users[index] = {
+      ...existing,
+      fullName: fullName !== undefined ? fullName.trim() : existing.fullName,
+      email: cleanEmail,
+      phone: phone !== undefined ? phone.trim() : existing.phone,
+      address: address !== undefined ? address.trim() : existing.address,
+      password: (password && password.trim()) ? password.trim() : existing.password,
+      updatedAt: new Date().toISOString()
+    };
+
+    await saveUsers(users);
+
+    res.json({
+      success: true,
+      message: 'Cập nhật thông tin người dùng thành công',
+      data: {
+        id: users[index].id,
+        fullName: users[index].fullName,
+        email: users[index].email,
+        phone: users[index].phone,
+        address: users[index].address,
+        createdAt: users[index].createdAt,
+        updatedAt: users[index].updatedAt
+      }
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ success: false, message: 'Lỗi khi cập nhật người dùng' });
+  }
+});
+
+// DELETE /api/admin/users/:id - Xóa người dùng
+router.delete('/users/:id', requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    let users = await getUsers();
+    const exists = users.some(u => u.id === id);
+
+    if (!exists) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng cần xóa' });
+    }
+
+    users = users.filter(u => u.id !== id);
+    await saveUsers(users);
+
+    res.json({
+      success: true,
+      message: 'Đã xóa người dùng thành công'
+    });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ success: false, message: 'Lỗi khi xóa người dùng' });
   }
 });
 

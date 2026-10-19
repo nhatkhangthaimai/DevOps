@@ -10,7 +10,7 @@ const adminRouter = require('./routes/admin');
 const authRouter = require('./routes/auth');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Middleware phân tích dữ liệu request
 app.use(cors());
